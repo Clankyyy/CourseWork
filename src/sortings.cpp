@@ -71,3 +71,23 @@ void InsertionSort::Prepare() {
   swaps_ = 0;
   comparisons_ = 0;
 }
+
+void SelectionSort::ExecuteSort(std::vector<double>& arr) {
+  for (size_t i = 0; i < arr.size() - 1; i++) {
+    size_t min = i;
+    for (size_t j = i + 1; j < arr.size(); j++) {
+      comparisons_++;
+      if (fabs(arr[j]) > fabs(arr[min])) min = j;
+    }
+
+    if (min != i) {
+      swaps_++;
+      std::swap(arr[min], arr[i]);
+    }
+  }
+}
+
+void SelectionSort::Prepare() {
+  swaps_ = 0;
+  comparisons_ = 0;
+}

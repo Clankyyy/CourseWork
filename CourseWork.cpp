@@ -19,9 +19,9 @@ void StartApp() {
 }
 void test() {
   StartApp();
-  std::vector<std::vector<double>> m = {{4, 1, 3}, {-1, 5, 6}};
+  std::vector<std::vector<double>> m = {{4, 1, 2.2, 3}, {-1, 5, -0.8, 6}};
   fmt::MatrixConsoleFmt fmtr = fmt::MatrixConsoleFmt();
-  MatrixSortStrategy *st = new InsertionSort(m);
+  MatrixSortStrategy *st = new SelectionSort(m);
   st->Sort();
   fmtr.SetSettings(st->matrix(), st->swaps(), st->comparisons());
   fmtr.Format(std::cout);
