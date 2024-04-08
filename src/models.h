@@ -4,8 +4,6 @@
 #include <functional>
 #include <iostream>
 
-#include "student.h"
-
 using matrix_ptr = std::shared_ptr<std::vector<std::vector<double>>>;
 class ListModel {
  public:

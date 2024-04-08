@@ -28,12 +28,21 @@ class MatrixSortStrategy {
   int comparisons_;
 };
 
-// best:??? , worst, mid: O(n**2)
+// best:???; worst, mid: O(n**2)
 class BubbleSort final : public MatrixSortStrategy {
  public:
   using MatrixSortStrategy::MatrixSortStrategy;
 
   void Sort() override;
+
+ private:
+  void ExecuteSort(std::vector<double>& arr) override;
+  void Prepare() override;
+};
+
+class InsertionSort final : public MatrixSortStrategy {
+ public:
+  using MatrixSortStrategy::MatrixSortStrategy;
 
  private:
   void ExecuteSort(std::vector<double>& arr) override;
