@@ -93,7 +93,7 @@ void SelectionSort::Prepare() {
 }
 
 void QuickSort::StartSort(std::vector<double>& arr, int low, int high) {
-  if (arr.size() < 2 || low < high) return;
+  if (arr.size() < 2 || low >= high) return;
 
   int pivot = Partition(arr, low, high);
 
@@ -104,19 +104,19 @@ void QuickSort::StartSort(std::vector<double>& arr, int low, int high) {
 
 int QuickSort::Partition(std::vector<double>& arr, int low, int high) {
   double pivot = arr[high];  // should be mid
-  int i = (low - 1);
+  int i = low - 1;
 
   for (int j = low; j < high; j++) {
-    if (arr[j] <= pivot) {
+    comparisons_++;
+    if (fabs(arr[j]) >= fabs(pivot)) {
       i++;
-      double tmp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = tmp;
-      // std::swap(arr[i], arr[j]);
+      std::swap(arr[i], arr[j]);
+      swaps_++;
     }
   }
   std::swap(arr[i + 1], arr[high]);
-  return (i + 1);
+  swaps_++;
+  return i + 1;
 }
 
 void QuickSort::ExecuteSort(std::vector<double>& arr) {
