@@ -21,7 +21,7 @@ void test() {
   StartApp();
   std::vector<std::vector<double>> m = {{4, 1, 2.2, 3}, {-1, 5, -0.8, 6}};
   fmt::MatrixConsoleFmt fmtr = fmt::MatrixConsoleFmt();
-  MatrixSortStrategy *st = new SelectionSort(m);
+  MatrixSortStrategy *st = new QuickSort(m);
   st->Sort();
   fmtr.SetSettings(st->matrix(), st->swaps(), st->comparisons());
   fmtr.Format(std::cout);

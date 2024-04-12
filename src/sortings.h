@@ -58,3 +58,14 @@ class SelectionSort final : public MatrixSortStrategy {
   void ExecuteSort(std::vector<double>& arr) override;
   void Prepare() override;
 };
+
+class QuickSort final : public MatrixSortStrategy {
+ public:
+  using MatrixSortStrategy::MatrixSortStrategy;
+
+ private:
+  void StartSort(std::vector<double>& arr, int low, int high);
+  int Partition(std::vector<double>& arr, int low, int high);
+  void ExecuteSort(std::vector<double>& arr) override;
+  void Prepare() override;
+};

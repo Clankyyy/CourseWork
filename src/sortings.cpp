@@ -91,3 +91,39 @@ void SelectionSort::Prepare() {
   swaps_ = 0;
   comparisons_ = 0;
 }
+
+void QuickSort::StartSort(std::vector<double>& arr, int low, int high) {
+  if (arr.size() < 2 || low < high) return;
+
+  int pivot = Partition(arr, low, high);
+
+  StartSort(arr, low, pivot - 1);
+
+  StartSort(arr, pivot + 1, high);
+}
+
+int QuickSort::Partition(std::vector<double>& arr, int low, int high) {
+  double pivot = arr[high];  // should be mid
+  int i = (low - 1);
+
+  for (int j = low; j < high; j++) {
+    if (arr[j] <= pivot) {
+      i++;
+      double tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+      // std::swap(arr[i], arr[j]);
+    }
+  }
+  std::swap(arr[i + 1], arr[high]);
+  return (i + 1);
+}
+
+void QuickSort::ExecuteSort(std::vector<double>& arr) {
+  StartSort(arr, 0, arr.size() - 1);
+}
+
+void QuickSort::Prepare() {
+  swaps_ = 0;
+  comparisons_ = 0;
+}
