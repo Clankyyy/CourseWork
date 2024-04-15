@@ -9,15 +9,11 @@ std::string utils::get_string(const std::string& msg) {
       std::cin.ignore(max_size, '\n');
       break;
     } else if (std::cin.fail()) {
-      std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, "
-                   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
-                   "пїЅпїЅпїЅпїЅ";
+      std::cout << "Произошла ошибка, повторите ввод, ";
       std::cin.clear();
       std::cin.ignore(max_size, '\n');
     } else {
-      std::cout
-          << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ"
-          << std::endl;
+      std::cout << "ОШИБКА!!!" << std::endl;
       std::cin.clear();
       std::cin.ignore(max_size, '\n');
     }
@@ -35,24 +31,18 @@ int utils::get_positive_int(const std::string& msg) {
       std::cin.ignore(max_size, '\n');
       std::cout << std::endl;
     } else if (std::cin.fail()) {
-      std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
-                   "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
-                   "пїЅпїЅпїЅпїЅпїЅ: ";
+      std::cout << "Введите целое положительное число: ";
       std::cin.clear();
       std::cin.ignore(max_size, '\n');
       continue;
     } else {
-      std::cout
-          << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ"
-          << std::endl;
+      std::cout << "ОШИБКА!!!" << std::endl;
       std::cin.clear();
       std::cin.ignore(max_size, '\n');
     }
 
     if (input < 1) {
-      std::cout << "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
-                   "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "
-                   "пїЅпїЅпїЅпїЅпїЅ: ";
+      std::cout << "Пожалуйста, введите целое положительное число: ";
       continue;
     }
     return input;
@@ -61,7 +51,6 @@ int utils::get_positive_int(const std::string& msg) {
 
 void fmt::MatrixConsoleFmt::Format(std::ostream& os) {
   if (matrix_ == nullptr) return;
-  std::cout << std::setprecision(2);
   FindMaxWidth();
   for (auto& row : *matrix_) {
     os << "{";
@@ -70,8 +59,10 @@ void fmt::MatrixConsoleFmt::Format(std::ostream& os) {
     }
     os << "}" << std::endl;
   }
-  os << "сравнений: " << comparisons_ << " "
-     << "замен: " << swaps_ << std::endl;
+  if (swaps_ != 0 && comparisons_ != 0) {
+    os << "сравнений: " << comparisons_ << " "
+       << "замен: " << swaps_ << std::endl;
+  }
 }
 
 void fmt::MatrixConsoleFmt::SetSettings(matrix_ptr m, int swaps,
@@ -84,10 +75,16 @@ void fmt::MatrixConsoleFmt::SetSettings(matrix_ptr m, int swaps,
 void fmt::MatrixConsoleFmt::FindMaxWidth() {
   for (auto& row : *matrix_) {
     for (auto& num : row) {
-      std::string num_text = std::to_string(num);
-      std::string num_strip = num_text.substr(0, num_text.find(",") + 3);
-      size_t num_width = num_strip.size();
-      //std::cout << num_strip << " ";
+      std::string num_str = std::to_string(num);
+      size_t delim = num_str.find(",");
+      size_t after_delim = num_str.find_first_of("123456789", delim + 1);
+
+      size_t num_width = 0;
+      if (after_delim != std::string::npos) {
+        num_width = num_str.substr(0, after_delim + 2).size();
+      } else {
+        num_width = num_str.substr(0, delim).size();
+      }
       if (max_width_ < num_width) max_width_ = num_width;
     }
   }

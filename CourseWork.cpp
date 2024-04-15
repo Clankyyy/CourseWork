@@ -8,22 +8,24 @@ void StartApp() {
 
   std::vector<std::unique_ptr<Controller>> controllers;
   // controllers.push_back(std::make_unique<ConsoleInputController>(model));
-  // controllers.push_back(std::make_unique<ShowController>(model));
+  controllers.push_back(std::make_unique<ShowController>(model));
   // controllers.push_back(std::make_unique<ModelSerializeController>(model));
-  // controllers.push_back(std::make_unique<ModelDeserializeController>(model));
+  controllers.push_back(std::make_unique<ModelDeserializeController>(model));
   // controllers.push_back(std::make_unique<ClearModelController>(model));
   controllers.push_back(std::make_unique<ExitController>());
 
   ConsoleView view = ConsoleView(std::move(controllers));
-  // view.Show();
+  view.Show();
 }
+
 void test() {
-  StartApp();
-  std::vector<std::vector<double>> m = {{4, 1, 2.2, 3}, {-1, 5, -0.8, 6}};
+  // StartApp();
+  std::vector<std::vector<double>> m = {{4, 1, 2.2, 3}, {-1, 5, -0.88, 6}};
   fmt::MatrixConsoleFmt fmtr = fmt::MatrixConsoleFmt();
   MatrixSortStrategy *st = new BubbleSort(m);
   st->Sort();
   fmtr.SetSettings(st->matrix(), st->swaps(), st->comparisons());
   fmtr.Format(std::cout);
 }
-int main() { test(); }
+
+int main() { StartApp(); }

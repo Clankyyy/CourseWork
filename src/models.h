@@ -4,7 +4,9 @@
 #include <functional>
 #include <iostream>
 
-using matrix_ptr = std::shared_ptr<std::vector<std::vector<double>>>;
+using matrix = std::vector<std::vector<double>>;
+using matrix_ptr = std::shared_ptr<matrix>;
+
 class ListModel {
  public:
   ListModel();

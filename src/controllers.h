@@ -16,7 +16,10 @@ class Controller {
 
 class ModelController : public Controller {
  public:
+  ModelController() = default;
   ModelController(std::shared_ptr<ListModel>& model);
+
+  virtual ~ModelController() = default;
 
  protected:
   std::shared_ptr<ListModel> model_;
@@ -39,7 +42,7 @@ class FileSystemController : public ModelController {
 
 class ModelDeserializeController : public FileSystemController {
  public:
-  using FileSystemController::FileSystemController;
+  ModelDeserializeController(std::shared_ptr<ListModel>& model);
   void GetPath() override;
   void Execute() override;
   std::string RelatedName() override;
@@ -55,9 +58,12 @@ class ModelSerializeController : public FileSystemController {
 
 class ShowController : public ModelController {
  public:
-  using ModelController::ModelController;
+  ShowController(std::shared_ptr<ListModel>& model);
   void Execute() override;
   std::string RelatedName() override;
+
+ private:
+  std::unique_ptr<fmt::MatrixConsoleFmt> fmtr_;
 };
 
 class ClearModelController : public ModelController {
