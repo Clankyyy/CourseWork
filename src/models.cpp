@@ -20,11 +20,15 @@ void ListModel::Deserialize(std::filesystem::path path) {
   } catch (const std::exception& e) {
     throw e;
   }
+  if (m_cols < 1 || m_rows < 1) {
+    throw std::invalid_argument("dimensions must be greater than 0");
+  }
 
-  matrix_->resize(m_cols, std::vector<double>(m_rows, 0));
+  Clear();
+  matrix_->resize(m_rows, std::vector<double>(m_cols, 0));
 
-  for (size_t i = 0; i < m_cols; i++) {
-    for (size_t j = 0; j < m_rows; j++) {
+  for (size_t i = 0; i < m_rows; i++) {
+    for (size_t j = 0; j < m_cols; j++) {
       try {
         double tmp = 0;
         ifs >> tmp;
@@ -45,13 +49,8 @@ void ListModel::Serialize(std::filesystem::path path) {
   ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
   try {
     ofs.open(path);
-    std::cout << std::filesystem::is_regular_file(path);
-  } catch (const std::exception& e) {
-    throw e;
-  }
-
-  try {
-    ofs << matrix_->size() << matrix_->front().size() << std::endl << std::endl;
+    ofs << matrix_->size() << " " << matrix_->front().size() << std::endl
+        << std::endl;
   } catch (const std::exception& e) {
     throw e;
   }
@@ -65,4 +64,9 @@ void ListModel::Serialize(std::filesystem::path path) {
   ofs.close();
 }
 
-void ListModel::Clear() { matrix_->clear(); }
+void ListModel::Clear() {
+  for (auto& row : *matrix_) {
+    row.clear();
+  };
+  matrix_->clear();
+}

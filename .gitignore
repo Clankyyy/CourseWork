@@ -6,6 +6,9 @@
 *.lo
 *.o
 *.obj
+# test files
+test.txt
+test1.txt
 
 # Precompiled Headers
 *.gch

@@ -37,6 +37,8 @@ void BubbleSort::Sort() {
   }
 }
 
+std::string BubbleSort::RelatedName() { return "Сортировка пузырьком"; }
+
 void BubbleSort::ExecuteSort(std::vector<double>& arr) {
   for (size_t i = 0; i < arr.size() - 1; i++) {
     for (size_t j = 0; j < arr.size() - i - 1; j++) {
@@ -54,8 +56,10 @@ void BubbleSort::Prepare() {
   comparisons_ = 0;
 }
 
+std::string InsertionSort::RelatedName() { return "Сортировка вставками"; }
+
 void InsertionSort::ExecuteSort(std::vector<double>& arr) {
-  for (int i = 1; i < arr.size(); i++) {
+  for (size_t i = 1; i < arr.size(); i++) {
     // double key = arr[i];
     int j = i - 1;
 
@@ -72,17 +76,19 @@ void InsertionSort::Prepare() {
   comparisons_ = 0;
 }
 
+std::string SelectionSort::RelatedName() { return "Сортировка выбором"; }
+
 void SelectionSort::ExecuteSort(std::vector<double>& arr) {
   for (size_t i = 0; i < arr.size() - 1; i++) {
-    size_t min = i;
+    size_t max = i;
     for (size_t j = i + 1; j < arr.size(); j++) {
       comparisons_++;
-      if (fabs(arr[j]) > fabs(arr[min])) min = j;
+      if (fabs(arr[j]) > fabs(arr[max])) max = j;
     }
 
-    if (min != i) {
+    if (max != i) {
       swaps_++;
-      std::swap(arr[min], arr[i]);
+      std::swap(arr[max], arr[i]);
     }
   }
 }
@@ -91,6 +97,8 @@ void SelectionSort::Prepare() {
   swaps_ = 0;
   comparisons_ = 0;
 }
+
+std::string QuickSort::RelatedName() { return "Быстрая сортировка"; }
 
 void QuickSort::StartSort(std::vector<double>& arr, int low, int high) {
   if (arr.size() < 2 || low >= high) return;
@@ -124,6 +132,27 @@ void QuickSort::ExecuteSort(std::vector<double>& arr) {
 }
 
 void QuickSort::Prepare() {
+  swaps_ = 0;
+  comparisons_ = 0;
+}
+
+std::string ShellSort::RelatedName() { return "Сортировка Шелла"; }
+
+void ShellSort::ExecuteSort(std::vector<double>& arr) {
+  for (size_t gap = arr.size() / 2; gap > 0; gap /= 2) {
+    for (size_t i = gap; i < arr.size(); i += 1) {
+      double temp = arr[i];
+
+      size_t j = 0;
+      for (j = i; j >= gap && fabs(arr[j - gap]) < fabs(temp); j -= gap)
+        arr[j] = arr[j - gap];
+
+      arr[j] = temp;
+    }
+  }
+}
+
+void ShellSort::Prepare() {
   swaps_ = 0;
   comparisons_ = 0;
 }

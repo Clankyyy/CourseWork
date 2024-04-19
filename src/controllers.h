@@ -4,6 +4,7 @@
 #include <string>
 
 #include "models.h"
+#include "sortings.h"
 #include "utils.h"
 
 class Controller {
@@ -40,6 +41,23 @@ class FileSystemController : public ModelController {
   std::filesystem::path path_;
 };
 
+class ModelSortController : public ModelController {
+ public:
+  ModelSortController(
+      std::shared_ptr<ListModel>& model,
+      std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>>
+          sortings);
+  void Execute() override;
+  std::string RelatedName() override;
+
+ private:
+  void StartSortings(matrix_ptr m);
+
+  std::unique_ptr<fmt::StatsTable> stats_fmtr_;
+  std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>> sortings_;
+  std::shared_ptr<fmt::MatrixConsoleFmt> fmtr_;
+};
+
 class ModelDeserializeController : public FileSystemController {
  public:
   ModelDeserializeController(std::shared_ptr<ListModel>& model);
@@ -50,7 +68,7 @@ class ModelDeserializeController : public FileSystemController {
 
 class ModelSerializeController : public FileSystemController {
  public:
-  using FileSystemController::FileSystemController;
+  ModelSerializeController(std::shared_ptr<ListModel>& model);
   void Execute() override;
   std::string RelatedName() override;
   ~ModelSerializeController() = default;
@@ -68,7 +86,7 @@ class ShowController : public ModelController {
 
 class ClearModelController : public ModelController {
  public:
-  using ModelController::ModelController;
+  ClearModelController(std::shared_ptr<ListModel>& model);
   void Execute() override;
   std::string RelatedName() override;
 };

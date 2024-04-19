@@ -39,7 +39,7 @@ void ShowController::Execute() {
     return;
   }
 
-  fmtr_->SetSettings(matrix, 0, 0);
+  fmtr_->SetSettings(matrix);
   fmtr_->Format(std::cout);
 }
 
@@ -104,6 +104,11 @@ bool FileSystemController::IsPathValid() {
   return true;
 }
 
+ModelSerializeController::ModelSerializeController(
+    std::shared_ptr<ListModel>& model) {
+  model_ = model;
+}
+
 void ModelSerializeController::Execute() {
   if (model_->IsEmpty()) {
     std::cout << "Матрица не задана, сохранение невозможно" << std::endl;
@@ -158,6 +163,10 @@ std::string ModelDeserializeController::RelatedName() {
   return "Инициализировать матрицу из файла";
 }
 
+ClearModelController::ClearModelController(std::shared_ptr<ListModel>& model) {
+  model_ = model;
+}
+
 void ClearModelController::Execute() {
   if (model_->IsEmpty()) {
     std::cout << "Матрица уже пуста" << std::endl;
@@ -169,3 +178,42 @@ void ClearModelController::Execute() {
 }
 
 std::string ClearModelController::RelatedName() { return "Очистить матрицу"; }
+
+ModelSortController::ModelSortController(
+    std::shared_ptr<ListModel>& model,
+    std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>>
+        sortings) {
+  model_ = model;
+  sortings_ = sortings;
+  sortings_->push_back(std::make_shared<BubbleSort>(*model->GetData()));
+  sortings_->push_back(std::make_shared<InsertionSort>(*model->GetData()));
+  sortings_->push_back(std::make_shared<SelectionSort>(*model->GetData()));
+  sortings_->push_back(std::make_shared<QuickSort>(*model->GetData()));
+  sortings_->push_back(std::make_shared<ShellSort>(*model->GetData()));
+
+  fmtr_ = std::make_shared<fmt::MatrixConsoleFmt>();
+  stats_fmtr_ = std::make_unique<fmt::StatsTable>();
+}
+
+void ModelSortController::Execute() {
+  matrix_ptr m = model_->GetData();
+  if (m->empty()) {
+    std::cout << "Матрица не задана, сортировка невозможна" << std::endl;
+    return;
+  }
+  StartSortings(m);
+}
+
+std::string ModelSortController::RelatedName() { return "Сортировать матрицу"; }
+
+void ModelSortController::StartSortings(matrix_ptr m) {
+  for (auto& s : *sortings_) {
+    s->Sort(*m);
+    std::string sort_name = s->RelatedName();
+    std::cout << sort_name << ": " << std::endl;
+    fmtr_->SetSettings(s->matrix());
+    stats_fmtr_->AddInfo(sort_name, s->swaps(), s->comparisons());
+    fmtr_->Format(std::cout);
+  }
+  stats_fmtr_->Format(std::cout);
+}

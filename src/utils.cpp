@@ -1,7 +1,7 @@
 #include "utils.h"
 
 std::string utils::get_string(const std::string& msg) {
-  constexpr auto max_size = std::numeric_limits<std::streamsize>::max();
+  constexpr auto max_size = (std::numeric_limits<std::streamsize>::max)();
   std::string input = "";
   while (true) {
     std::cout << msg;
@@ -23,7 +23,7 @@ std::string utils::get_string(const std::string& msg) {
 
 int utils::get_positive_int(const std::string& msg) {
   int input = 0;
-  constexpr auto max_size = std::numeric_limits<std::streamsize>::max();
+  constexpr auto max_size = (std::numeric_limits<std::streamsize>::max)();
 
   std::cout << msg;
   while (true) {
@@ -59,18 +59,10 @@ void fmt::MatrixConsoleFmt::Format(std::ostream& os) {
     }
     os << "}" << std::endl;
   }
-  if (swaps_ != 0 && comparisons_ != 0) {
-    os << "сравнений: " << comparisons_ << " "
-       << "замен: " << swaps_ << std::endl;
-  }
+  os << std::endl;
 }
 
-void fmt::MatrixConsoleFmt::SetSettings(matrix_ptr m, int swaps,
-                                        int comparisons) {
-  swaps_ = swaps;
-  comparisons_ = comparisons;
-  matrix_ = m;
-}
+void fmt::MatrixConsoleFmt::SetSettings(matrix_ptr m) { matrix_ = m; }
 
 void fmt::MatrixConsoleFmt::FindMaxWidth() {
   for (auto& row : *matrix_) {
@@ -88,4 +80,97 @@ void fmt::MatrixConsoleFmt::FindMaxWidth() {
       if (max_width_ < num_width) max_width_ = num_width;
     }
   }
+}
+
+fmt::StatsTable::StatsTable() {
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  GetConsoleScreenBufferInfo(h, &csb_info);
+}
+
+void fmt::StatsTable::Format(std::ostream& os) {
+  size_t name_width = FindMaxNameWidth();
+  auto [swaps_index, comparisons_index] = FindIndexes();
+
+  PrintTemplate(os);
+  for (size_t i = 0; i < names_.size(); i++) {
+    os.setf(std::ios::left);
+    os << std::setw(name_width) << names_[i] << "|";
+    os.unsetf(std::ios::left);
+
+    if (i == swaps_index) {
+      ChangeColor();
+      os << std::setw(5) << stats_[i].first;
+      ResetColor();
+    } else {
+      os << std::setw(5) << stats_[i].first;
+    }
+    os << "|";
+
+    if (i == comparisons_index) {
+      ChangeColor();
+      os << std::setw(9) << stats_[i].second;
+      ResetColor();
+    } else {
+      os << std::setw(9) << stats_[i].second;
+    }
+    os << "|";
+
+    os << std::endl;
+  }
+}
+
+void fmt::StatsTable::AddInfo(std::string name, int swaps, int comparisons) {
+  names_.push_back(name);
+  stats_.push_back(std::make_pair(swaps, comparisons));
+}
+
+std::pair<size_t, size_t> fmt::StatsTable::FindIndexes() {
+  size_t min_swaps_index = 0;
+  size_t min_comparisons_index = 0;
+  int min_swaps = stats_[0].first;
+  int min_comparisons = stats_[0].second;
+  for (size_t i = 0; i < stats_.size(); i++) {
+    if (stats_[i].first < min_swaps) {
+      min_swaps = stats_[i].first;
+      min_swaps_index = i;
+    }
+    if (stats_[i].second < min_comparisons) {
+      min_comparisons = stats_[i].second;
+      min_comparisons_index = i;
+    }
+  }
+
+  return std::make_pair(min_swaps_index, min_comparisons_index);
+}
+
+void fmt::StatsTable::ChangeColor() {
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  SetConsoleTextAttribute(h, FOREGROUND_GREEN);
+}
+
+void fmt::StatsTable::ResetColor() {
+  HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+  SetConsoleTextAttribute(h, csb_info.wAttributes);
+}
+
+void fmt::StatsTable::PrintTemplate(std::ostream& os) {
+  size_t name_width = FindMaxNameWidth();
+  std::string swaps = "замен";
+  std::string comparisons = "сравнений";
+  os << std::setw(name_width) << "сортировка"
+     << "|";
+  os << std::setw(swaps.size()) << swaps << "|";
+  os << std::setw(comparisons.size()) << comparisons << "|" << std::endl;
+}
+
+size_t fmt::StatsTable::FindMaxNameWidth() {
+  size_t max = 0;
+  for (auto& name : names_) {
+    if (name.size() > max) max = name.size();
+  }
+
+  return max;
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -14,6 +15,8 @@ class MatrixSortStrategy {
 
   virtual void Sort();
   virtual void Sort(std::vector<std::vector<double>> matrix);
+
+  virtual std::string RelatedName() = 0;
 
   matrix_ptr matrix() const;
   int swaps() const;
@@ -34,6 +37,7 @@ class BubbleSort final : public MatrixSortStrategy {
   using MatrixSortStrategy::MatrixSortStrategy;
 
   void Sort() override;
+  std::string RelatedName() override;
 
  private:
   void ExecuteSort(std::vector<double>& arr) override;
@@ -44,6 +48,7 @@ class BubbleSort final : public MatrixSortStrategy {
 class InsertionSort final : public MatrixSortStrategy {
  public:
   using MatrixSortStrategy::MatrixSortStrategy;
+  std::string RelatedName() override;
 
  private:
   void ExecuteSort(std::vector<double>& arr) override;
@@ -53,6 +58,7 @@ class InsertionSort final : public MatrixSortStrategy {
 class SelectionSort final : public MatrixSortStrategy {
  public:
   using MatrixSortStrategy::MatrixSortStrategy;
+  std::string RelatedName() override;
 
  private:
   void ExecuteSort(std::vector<double>& arr) override;
@@ -62,10 +68,21 @@ class SelectionSort final : public MatrixSortStrategy {
 class QuickSort final : public MatrixSortStrategy {
  public:
   using MatrixSortStrategy::MatrixSortStrategy;
+  std::string RelatedName() override;
 
  private:
   void StartSort(std::vector<double>& arr, int low, int high);
   int Partition(std::vector<double>& arr, int low, int high);
+  void ExecuteSort(std::vector<double>& arr) override;
+  void Prepare() override;
+};
+
+class ShellSort final : public MatrixSortStrategy {
+ public:
+  using MatrixSortStrategy::MatrixSortStrategy;
+  std::string RelatedName() override;
+
+ private:
   void ExecuteSort(std::vector<double>& arr) override;
   void Prepare() override;
 };
