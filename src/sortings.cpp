@@ -63,10 +63,15 @@ void InsertionSort::ExecuteSort(std::vector<double>& arr) {
     // double key = arr[i];
     int j = i - 1;
 
-    while (j >= 0 && fabs(arr[j]) < fabs(arr[j + 1])) {
-      std::swap(arr[j], arr[j + 1]);
-      swaps_++;
-      j--;
+    while (j >= 0) {
+      comparisons_++;
+      if (fabs(arr[j]) < fabs(arr[j + 1])) {
+        std::swap(arr[j], arr[j + 1]);
+        swaps_++;
+        j--;
+      } else {
+        break;
+      }
     }
   }
 }

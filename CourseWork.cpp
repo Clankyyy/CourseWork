@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <windows.h>
-
-#include "conio.h"
 #include "src/controllers.h"
 #include "src/models.h"
 #include "src/sortings.h"
@@ -18,6 +14,8 @@ void StartApp() {
   controllers.push_back(std::make_unique<ShowController>(model));
   controllers.push_back(std::make_unique<ModelSortController>(model, sortings));
   controllers.push_back(std::make_unique<ModelSerializeController>(model));
+  controllers.push_back(
+      std::make_unique<SortingsSerializeController>(model, sortings));
   controllers.push_back(std::make_unique<ModelDeserializeController>(model));
   controllers.push_back(std::make_unique<ClearModelController>(model));
   controllers.push_back(std::make_unique<ExitController>());

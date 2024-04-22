@@ -48,7 +48,7 @@ std::string ShowController::RelatedName() { return "Вывести исходную матрицу"; }
 void FileSystemController::GetAbsolutePath() {
   std::string path = "";
   std::string path_example = R"(C:\Users\UserName\Desktop\test.txt)";
-  std::cout << "Введите путь, например" << path_example << std::endl
+  std::cout << "Введите путь, например: " << path_example << std::endl
             << "Путь: ";
   std::getline(std::cin, path);
   path_ = path;
@@ -98,7 +98,7 @@ void FileSystemController::GetPath() {
 bool FileSystemController::IsPathValid() {
   if (path_.extension() != ".txt") {
     std::cout << "Программа поддерживает файлы с расширением .txt " << std::endl
-              << "Указанное расширение: .txt" << path_.extension();
+              << "Указанное расширение: " << path_.extension();
     return false;
   }
   return true;
@@ -216,4 +216,60 @@ void ModelSortController::StartSortings(matrix_ptr m) {
     fmtr_->Format(std::cout);
   }
   stats_fmtr_->Format(std::cout);
+}
+
+SortingsSerializeController::SortingsSerializeController(
+    std::shared_ptr<ListModel>& model,
+    std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>>
+        sortings) {
+  model_ = model;
+  sortings_ = sortings;
+  fmtr_ = std::make_shared<fmt::MatrixConsoleFmt>();
+  stats_fmtr_ = std::make_unique<fmt::StatsTable>();
+}
+
+void SortingsSerializeController::Execute() {
+  if (IsSortingsEmpty()) {
+    std::cout << "Матрица не была отсортирована, сохранение невозможно"
+              << std::endl;
+    return;
+  }
+  GetPath();
+  Serialize();
+}
+
+std::string SortingsSerializeController::RelatedName() {
+  return "Сохранить результат сортировок";
+}
+
+void SortingsSerializeController::Serialize() {
+  std::ofstream ofs;
+  ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
+  try {
+    ofs.open(path_);
+    WriteStats(ofs);
+
+  } catch (const std::exception& e) {
+    std::cout << "Не удалось сохранить результаты сортировок в указанный файл"
+              << std::endl;
+  }
+}
+
+void SortingsSerializeController::WriteStats(std::ostream& os) {
+  for (auto& s : *sortings_) {
+    std::string sort_name = s->RelatedName();
+    std::cout << sort_name << ": " << std::endl;
+    fmtr_->SetSettings(s->matrix());
+    stats_fmtr_->AddInfo(sort_name, s->swaps(), s->comparisons());
+    fmtr_->Format(os);
+  }
+  stats_fmtr_->Format(os);
+}
+
+bool SortingsSerializeController::IsSortingsEmpty() {
+  if (sortings_->front()->comparisons() == 0 &&
+      sortings_->front()->swaps() == 0) {
+    return false;
+  }
+  return true;
 }

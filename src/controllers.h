@@ -41,6 +41,24 @@ class FileSystemController : public ModelController {
   std::filesystem::path path_;
 };
 
+class SortingsSerializeController : public FileSystemController {
+ public:
+  SortingsSerializeController(
+      std::shared_ptr<ListModel>& model,
+      std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>>
+          sortings);
+  void Execute() override;
+  std::string RelatedName() override;
+
+ private:
+  void Serialize();
+  bool IsSortingsEmpty();
+  void WriteStats(std::ostream& os);
+  std::unique_ptr<fmt::StatsTable> stats_fmtr_;
+  std::shared_ptr<std::vector<std::shared_ptr<MatrixSortStrategy>>> sortings_;
+  std::shared_ptr<fmt::MatrixConsoleFmt> fmtr_;
+};
+
 class ModelSortController : public ModelController {
  public:
   ModelSortController(

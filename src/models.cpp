@@ -52,6 +52,7 @@ void ListModel::Serialize(std::filesystem::path path) {
     ofs << matrix_->size() << " " << matrix_->front().size() << std::endl
         << std::endl;
   } catch (const std::exception& e) {
+    ofs.close();
     throw e;
   }
 
