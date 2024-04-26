@@ -46,7 +46,7 @@ void BubbleSort::ExecuteSort(std::vector<double>& arr) {
     swapped = false;
     for (size_t j = 0; j < arr.size() - i - 1; j++) {
       comparisons_++;
-      if (arr[j] > arr[j + 1]) {
+      if (fabs(arr[j]) < fabs(arr[j + 1])) {
         swaps_++;
         std::swap(arr[j], arr[j + 1]);
         swapped = true;
