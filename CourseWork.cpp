@@ -12,6 +12,7 @@ void StartApp() {
   std::vector<std::unique_ptr<Controller>> controllers;
   // controllers.push_back(std::make_unique<ConsoleInputController>(model));
   controllers.push_back(std::make_unique<ShowController>(model));
+  controllers.push_back(std::make_unique<FillRandomController>(model));
   controllers.push_back(std::make_unique<ModelSortController>(model, sortings));
   controllers.push_back(std::make_unique<ModelSerializeController>(model));
   controllers.push_back(

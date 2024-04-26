@@ -40,14 +40,20 @@ void BubbleSort::Sort() {
 std::string BubbleSort::RelatedName() { return "Сортировка пузырьком"; }
 
 void BubbleSort::ExecuteSort(std::vector<double>& arr) {
+  bool swapped = false;
+
   for (size_t i = 0; i < arr.size() - 1; i++) {
+    swapped = false;
     for (size_t j = 0; j < arr.size() - i - 1; j++) {
       comparisons_++;
-      if (fabs(arr[j]) < fabs(arr[j + 1])) {
-        std::swap(arr[j], arr[j + 1]);
+      if (arr[j] > arr[j + 1]) {
         swaps_++;
+        std::swap(arr[j], arr[j + 1]);
+        swapped = true;
       }
     }
+
+    if (swapped == false) break;
   }
 }
 
@@ -148,10 +154,18 @@ void ShellSort::ExecuteSort(std::vector<double>& arr) {
     for (size_t i = gap; i < arr.size(); i += 1) {
       double temp = arr[i];
 
-      size_t j = 0;
-      for (j = i; j >= gap && fabs(arr[j - gap]) < fabs(temp); j -= gap)
-        arr[j] = arr[j - gap];
-
+      size_t j = i;
+      while (j >= gap) {
+        comparisons_++;
+        if (fabs(arr[j - gap]) < fabs(temp)) {
+          arr[j] = arr[j - gap];
+          swaps_++;
+          j -= gap;
+        } else {
+          break;
+        }
+      }
+      swaps_++;
       arr[j] = temp;
     }
   }

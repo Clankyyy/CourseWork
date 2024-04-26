@@ -3,12 +3,29 @@
 #include <windows.h>
 
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <string>
 #include <vector>
 
 #include "conio.h"
+namespace rnd {
+
+class RandDouble {
+ public:
+  RandDouble(double low, double high)
+      : r(std::bind(std::uniform_real_distribution<>(low, high),
+                    std::default_random_engine())) {}
+
+  double operator()();
+
+ private:
+  std::function<double()> r;
+};
+
+}  // namespace rnd
 
 namespace fmt {
 
@@ -38,6 +55,7 @@ class StatsTable {
   StatsTable();
   void Format(std::ostream& os);
   void AddInfo(std::string name, int swaps, int comparisons);
+  void Clear();
 
  private:
   std::pair<size_t, size_t> FindIndexes();

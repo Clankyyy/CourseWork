@@ -55,7 +55,7 @@ void fmt::MatrixConsoleFmt::Format(std::ostream& os) {
   for (auto& row : *matrix_) {
     os << "{";
     for (auto& num : row) {
-      os << std::setw(max_width_) << num << ";";
+      os << std::setprecision(2) << std::setw(max_width_) << num << ";";
     }
     os << "}" << std::endl;
   }
@@ -125,6 +125,11 @@ void fmt::StatsTable::AddInfo(std::string name, int swaps, int comparisons) {
   stats_.push_back(std::make_pair(swaps, comparisons));
 }
 
+void fmt::StatsTable::Clear() {
+  names_.clear();
+  stats_.clear();
+}
+
 std::pair<size_t, size_t> fmt::StatsTable::FindIndexes() {
   size_t min_swaps_index = 0;
   size_t min_comparisons_index = 0;
@@ -174,3 +179,5 @@ size_t fmt::StatsTable::FindMaxNameWidth() {
 
   return max;
 }
+
+double rnd::RandDouble::operator()() { return r(); }

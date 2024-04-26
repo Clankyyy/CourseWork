@@ -44,6 +44,17 @@ void ListModel::Deserialize(std::filesystem::path path) {
 
 bool ListModel::IsEmpty() { return matrix_->empty(); }
 
+void ListModel::FillMatrix(size_t cols, size_t rows) {
+  matrix_->resize(rows, std::vector<double>(cols, 0));
+
+  rnd::RandDouble double_gen{-10, 10};
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
+      matrix_->at(i).at(j) = double_gen();
+    }
+  }
+}
+
 void ListModel::Serialize(std::filesystem::path path) {
   std::ofstream ofs;
   ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);

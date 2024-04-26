@@ -102,6 +102,16 @@ class ShowController : public ModelController {
   std::unique_ptr<fmt::MatrixConsoleFmt> fmtr_;
 };
 
+class FillRandomController : public ModelController {
+ public:
+  FillRandomController(std::shared_ptr<ListModel>& model);
+  void Execute() override;
+  std::string RelatedName() override;
+
+ private:
+  std::unique_ptr<fmt::MatrixConsoleFmt> fmtr_;
+};
+
 class ClearModelController : public ModelController {
  public:
   ClearModelController(std::shared_ptr<ListModel>& model);

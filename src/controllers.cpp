@@ -201,6 +201,7 @@ void ModelSortController::Execute() {
     std::cout << "Матрица не задана, сортировка невозможна" << std::endl;
     return;
   }
+  stats_fmtr_->Clear();
   StartSortings(m);
 }
 
@@ -249,7 +250,7 @@ void SortingsSerializeController::Serialize() {
     ofs.open(path_);
     WriteStats(ofs);
 
-  } catch (const std::exception& e) {
+  } catch (...) {
     std::cout << "Не удалось сохранить результаты сортировок в указанный файл"
               << std::endl;
   }
@@ -258,7 +259,7 @@ void SortingsSerializeController::Serialize() {
 void SortingsSerializeController::WriteStats(std::ostream& os) {
   for (auto& s : *sortings_) {
     std::string sort_name = s->RelatedName();
-    std::cout << sort_name << ": " << std::endl;
+    os << sort_name << ": " << std::endl;
     fmtr_->SetSettings(s->matrix());
     stats_fmtr_->AddInfo(sort_name, s->swaps(), s->comparisons());
     fmtr_->Format(os);
@@ -269,7 +270,34 @@ void SortingsSerializeController::WriteStats(std::ostream& os) {
 bool SortingsSerializeController::IsSortingsEmpty() {
   if (sortings_->front()->comparisons() == 0 &&
       sortings_->front()->swaps() == 0) {
-    return false;
+    return true;
   }
-  return true;
+  return false;
+}
+
+FillRandomController::FillRandomController(std::shared_ptr<ListModel>& model) {
+  model_ = model;
+  fmtr_ = std::make_unique<fmt::MatrixConsoleFmt>();
+}
+
+void FillRandomController::Execute() {
+  if (!model_->IsEmpty()) {
+    std::cout << "Матрица уже задана, очистите, для того чтобы создать новую";
+    return;
+  }
+  size_t cols =
+      static_cast<size_t>(utils::get_positive_int("Введите число столбцов: "));
+  size_t rows =
+      static_cast<size_t>(utils::get_positive_int("Введите число строчек: "));
+
+  model_->FillMatrix(cols, rows);
+
+  matrix_ptr new_matrix = model_->GetData();
+
+  fmtr_->SetSettings(new_matrix);
+  fmtr_->Format(std::cout);
+}
+
+std::string FillRandomController::RelatedName() {
+  return "Заполнить матрицу случайными числами";
 }
