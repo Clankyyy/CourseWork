@@ -3,29 +3,9 @@
 ModelController::ModelController(std::shared_ptr<ListModel>& model)
     : model_(model) {}
 
-void ConsoleInputController::GetMatrix() {
-  while (true) {
-    try {
-      // model_->Create();
-      break;
-    } catch (const std::invalid_argument&) {
-      std::cout << "Не удалось создать матрицу" << std::endl;
-    }
-  }
-}
-
-void ConsoleInputController::Execute() { GetMatrix(); }
-
-std::string ConsoleInputController::RelatedName() { return "Ввести матрицу"; }
-
 void ExitController::Execute() { exit(EXIT_SUCCESS); }
 
 std::string ExitController::RelatedName() { return "Выйти"; }
-
-// ShowController::ShowController(std::shared_ptr<ListModel>& model) {
-//   model = model_;
-//   fmtr_ = std::make_unique<fmt::MatrixConsoleFmt>();
-// }
 
 ShowController::ShowController(std::shared_ptr<ListModel>& model) {
   model_ = model;
@@ -125,7 +105,7 @@ void ModelSerializeController::Execute() {
 }
 
 std::string ModelSerializeController::RelatedName() {
-  return "Сохранить матрицу в файл";
+  return "Сохранить исходную матрицу в файл";
 }
 
 ModelDeserializeController::ModelDeserializeController(
@@ -149,6 +129,11 @@ void ModelDeserializeController::GetPath() {
 }
 
 void ModelDeserializeController::Execute() {
+  if (!model_->IsEmpty()) {
+    std::cout << "Матрица уже задана, очистите, для того чтобы создать новую";
+    return;
+  }
+
   GetPath();
 
   try {
@@ -289,8 +274,14 @@ void FillRandomController::Execute() {
       static_cast<size_t>(utils::get_positive_int("Введите число столбцов: "));
   size_t rows =
       static_cast<size_t>(utils::get_positive_int("Введите число строчек: "));
+  double min = utils::get_double("Введите нижнюю границу: ");
+  double max = utils::get_double("Введите верхнюю границу: ");
+  if (min > max) {
+    std::swap(min, max);
+    std::cout << "Значения границ были переставлены!" << std::endl;
+  }
 
-  model_->FillMatrix(cols, rows);
+  model_->FillMatrix(cols, rows, min, max);
 
   matrix_ptr new_matrix = model_->GetData();
 
@@ -300,4 +291,42 @@ void FillRandomController::Execute() {
 
 std::string FillRandomController::RelatedName() {
   return "Заполнить матрицу случайными числами";
+}
+
+ConsoleInputController::ConsoleInputController(
+    std::shared_ptr<ListModel>& model) {
+  model_ = model;
+  fmtr_ = std::make_unique<fmt::MatrixConsoleFmt>();
+}
+
+void ConsoleInputController::Execute() {
+  if (!model_->IsEmpty()) {
+    std::cout << "Очистите матрицу для ввода новой" << std::endl;
+    return;
+  }
+
+  auto [cols, rows] = GetDimensions();
+  std::vector<std::vector<double>> m(rows, std::vector<double>(cols));
+
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
+      std::cout << "Элемент " << i + 1 << " строку " << j + 1 << " столбец: ";
+      m[i][j] = utils::get_double("");
+    }
+  }
+
+  model_->Create(std::make_shared<matrix>(m));
+}
+
+std::string ConsoleInputController::RelatedName() {
+  return "Ручной ввод матрицы";
+}
+
+std::pair<size_t, size_t> ConsoleInputController::GetDimensions() {
+  size_t cols =
+      static_cast<size_t>(utils::get_positive_int("Введите число столбцов: "));
+  size_t rows =
+      static_cast<size_t>(utils::get_positive_int("Введите число строчек: "));
+
+  return std::make_pair(cols, rows);
 }

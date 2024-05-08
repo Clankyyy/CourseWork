@@ -15,9 +15,7 @@ namespace rnd {
 
 class RandDouble {
  public:
-  RandDouble(double low, double high)
-      : r(std::bind(std::uniform_real_distribution<>(low, high),
-                    std::default_random_engine())) {}
+  RandDouble(double low, double high);
 
   double operator()();
 
@@ -73,4 +71,5 @@ class StatsTable {
 namespace utils {
 std::string get_string(const std::string& msg);
 int get_positive_int(const std::string& msg);
+double get_double(const std::string& msg);
 }  // namespace utils

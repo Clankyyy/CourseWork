@@ -49,6 +49,30 @@ int utils::get_positive_int(const std::string& msg) {
   }
 }
 
+double utils::get_double(const std::string& msg) {
+  double input = 0;
+  constexpr auto max_size = (std::numeric_limits<std::streamsize>::max)();
+
+  std::cout << msg;
+  while (true) {
+    if (std::cin >> input) {
+      std::cin.ignore(max_size, '\n');
+      std::cout << std::endl;
+    } else if (std::cin.fail()) {
+      std::cout << "Введите целое положительное число: ";
+      std::cin.clear();
+      std::cin.ignore(max_size, '\n');
+      continue;
+    } else {
+      std::cout << "ОШИБКА!!!" << std::endl;
+      std::cin.clear();
+      std::cin.ignore(max_size, '\n');
+    }
+
+    return input;
+  }
+}
+
 void fmt::MatrixConsoleFmt::Format(std::ostream& os) {
   if (matrix_ == nullptr) return;
   FindMaxWidth();
@@ -73,7 +97,7 @@ void fmt::MatrixConsoleFmt::FindMaxWidth() {
 
       size_t num_width = 0;
       if (after_delim != std::string::npos) {
-        num_width = num_str.substr(0, after_delim + 2).size();
+        num_width = num_str.substr(0, after_delim + 1).size();
       } else {
         num_width = num_str.substr(0, delim).size();
       }
@@ -178,6 +202,12 @@ size_t fmt::StatsTable::FindMaxNameWidth() {
   }
 
   return max;
+}
+
+rnd::RandDouble::RandDouble(double low, double high) {
+  std::random_device device;
+  r = std::bind(std::uniform_real_distribution<>(low, high),
+                std::default_random_engine(device()));
 }
 
 double rnd::RandDouble::operator()() { return r(); }

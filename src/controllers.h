@@ -112,6 +112,17 @@ class FillRandomController : public ModelController {
   std::unique_ptr<fmt::MatrixConsoleFmt> fmtr_;
 };
 
+class ConsoleInputController : public ModelController {
+ public:
+  ConsoleInputController(std::shared_ptr<ListModel>& model);
+  void Execute() override;
+  std::string RelatedName() override;
+
+ private:
+  std::pair<size_t, size_t> GetDimensions();
+  std::unique_ptr<fmt::MatrixConsoleFmt> fmtr_;
+};
+
 class ClearModelController : public ModelController {
  public:
   ClearModelController(std::shared_ptr<ListModel>& model);
@@ -124,14 +135,4 @@ class ExitController : public Controller {
   ExitController() = default;
   void Execute() override;
   std::string RelatedName() override;
-};
-
-class ConsoleInputController : public ModelController {
- public:
-  using ModelController::ModelController;
-  void Execute() override;
-  std::string RelatedName() override;
-
- private:
-  void GetMatrix();
 };

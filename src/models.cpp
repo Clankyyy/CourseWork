@@ -15,8 +15,9 @@ void ListModel::Deserialize(std::filesystem::path path) {
 
   try {
     ifs.open(path);
-    ifs >> m_cols;
-    ifs >> m_rows;
+    auto pair = GetDimensions(ifs);
+    m_cols = pair.first;
+    m_rows = pair.second;
   } catch (const std::exception& e) {
     throw e;
   }
@@ -44,10 +45,10 @@ void ListModel::Deserialize(std::filesystem::path path) {
 
 bool ListModel::IsEmpty() { return matrix_->empty(); }
 
-void ListModel::FillMatrix(size_t cols, size_t rows) {
+void ListModel::FillMatrix(size_t cols, size_t rows, double min, double max) {
   matrix_->resize(rows, std::vector<double>(cols, 0));
 
-  rnd::RandDouble double_gen{-10, 10};
+  rnd::RandDouble double_gen{min, max};
   for (size_t i = 0; i < rows; i++) {
     for (size_t j = 0; j < cols; j++) {
       matrix_->at(i).at(j) = double_gen();
@@ -60,7 +61,7 @@ void ListModel::Serialize(std::filesystem::path path) {
   ofs.exceptions(std::ofstream::badbit | std::ofstream::failbit);
   try {
     ofs.open(path);
-    ofs << matrix_->size() << " " << matrix_->front().size() << std::endl
+    ofs << matrix_->front().size() << " " << matrix_->size() << std::endl
         << std::endl;
   } catch (const std::exception& e) {
     ofs.close();
@@ -81,4 +82,26 @@ void ListModel::Clear() {
     row.clear();
   };
   matrix_->clear();
+}
+
+std::pair<size_t, size_t> ListModel::GetDimensions(std::ifstream& ifs) {
+  std::string dimensions;
+  std::getline(ifs, dimensions);
+  std::vector<std::string> result;
+  std::stringstream ss(dimensions);
+  std::string token;
+  while (std::getline(ss, token, ' ')) {
+    if (!token.empty()) {
+      result.push_back(token);
+    }
+  }
+
+  if (result.size() != 2) {
+    throw std::invalid_argument("");
+  }
+
+  size_t cols = std::stoi(result[0]);
+  size_t rows = std::stoi(result[1]);
+
+  return std::make_pair(cols, rows);
 }
