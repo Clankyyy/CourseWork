@@ -116,26 +116,32 @@ void QuickSort::StartSort(std::vector<double>& arr, int low, int high) {
 
   int pivot = Partition(arr, low, high);
 
-  StartSort(arr, low, pivot - 1);
+  StartSort(arr, low, pivot);
 
   StartSort(arr, pivot + 1, high);
 }
 
 int QuickSort::Partition(std::vector<double>& arr, int low, int high) {
-  double pivot = arr[high];  // should be mid
+  double pivot = fabs(arr[(low + high) / 2]);
   int i = low - 1;
+  int j = high + 1;
 
-  for (int j = low; j < high; j++) {
-    comparisons_++;
-    if (fabs(arr[j]) >= fabs(pivot)) {
+  while (true) {
+    do {
       i++;
-      std::swap(arr[i], arr[j]);
-      swaps_++;
-    }
+      comparisons_++;
+    } while (fabs(arr[i]) > pivot);
+
+    do {
+      j--;
+      comparisons_++;
+    } while (fabs(arr[j]) < pivot);
+
+    if (i >= j) return j;
+
+    swaps_++;
+    std::swap(arr[i], arr[j]);
   }
-  std::swap(arr[i + 1], arr[high]);
-  swaps_++;
-  return i + 1;
 }
 
 void QuickSort::ExecuteSort(std::vector<double>& arr) {
@@ -153,11 +159,12 @@ void ShellSort::ExecuteSort(std::vector<double>& arr) {
   for (size_t gap = arr.size() / 2; gap > 0; gap /= 2) {
     for (size_t i = gap; i < arr.size(); i += 1) {
       double temp = arr[i];
-
+      bool different = false;
       size_t j = i;
       while (j >= gap) {
         comparisons_++;
         if (fabs(arr[j - gap]) < fabs(temp)) {
+          different = true;
           arr[j] = arr[j - gap];
           swaps_++;
           j -= gap;
@@ -165,8 +172,10 @@ void ShellSort::ExecuteSort(std::vector<double>& arr) {
           break;
         }
       }
-      swaps_++;
-      arr[j] = temp;
+      if (different == true) {
+        arr[j] = temp;
+        swaps_++;
+      }
     }
   }
 }
